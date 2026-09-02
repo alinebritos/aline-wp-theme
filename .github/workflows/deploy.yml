@@ -17,7 +17,11 @@ jobs:
           fetch-depth: 0
 
       - name: Sincronizar arquivos via Git-FTP
+        env:
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
         run: |
           sudo apt-get update && sudo apt-get install -y git-ftp
-          git ftp config --user "${{ secrets.FTP_USERNAME }}" --passwd "${{ secrets.FTP_PASSWORD }}" --url "ftp://${{ secrets.FTP_SERVER }}/www/wp-content/themes/aline-wp-theme/"
-          git ftp push --auto-init --insecure
+          git ftp config --user "$FTP_USER" --passwd "$FTP_PASS" --url "ftp://$FTP_HOST/www/wp-content/themes/aline-wp-theme/"
+          git ftp catchup --insecure || git ftp init --insecure || git ftp push --insecure
