@@ -35,7 +35,7 @@ jobs:
 
           # Define o caminho dinamico com base no nivel de acesso do usuario
           if echo "$ROOT_DIRS" | grep -qx "www"; then
-            REMOTE_PATH="www/wp-content/themes/aline-wp-theme"
+            REMOTE_PATH="/www/wp-content/themes/"
           elif echo "$ROOT_DIRS" | grep -qx "wp-content"; then
             REMOTE_PATH="wp-content/themes/aline-wp-theme"
           elif echo "$ROOT_DIRS" | grep -qx "themes"; then
