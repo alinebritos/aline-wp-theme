@@ -24,11 +24,13 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y git-ftp
 
-          # Higieniza o host para evitar duplicacao de protocolo ou barras
+          # Higieniza o endereço do host
           CLEAN_HOST=$(echo "$FTP_HOST" | sed -e 's|^ftp://||' -e 's|/||g')
 
-          # Configura as credenciais e a URL de destino
-          git ftp config --user "$FTP_USER" --passwd "$FTP_PASS" --url "ftp://${CLEAN_HOST}/wp-content/themes/aline-wp-theme/"
+          # Salva as configuracoes diretamente nas variaveis do Git
+          git config git-ftp.user "$FTP_USER"
+          git config git-ftp.password "$FTP_PASS"
+          git config git-ftp.url "ftp://${CLEAN_HOST}/wp-content/themes/aline-wp-theme/"
 
-          # Executa a inicializacao ou a sincronizacao
-          git ftp init -v --passive --insecure || git ftp push -v --passive --insecure
+          # Executa o envio inicial ou atualiza os arquivos
+          git ftp init --passive --insecure || git ftp push --passive --insecure
