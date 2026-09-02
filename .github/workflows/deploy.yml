@@ -14,10 +14,10 @@ jobs:
       - name: Baixar codigo do repositorio
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Necessario para o git-ftp comparar as alteracoes
+          fetch-depth: 0
 
       - name: Sincronizar arquivos via Git-FTP
         run: |
           sudo apt-get update && sudo apt-get install -y git-ftp
           git ftp config --user "${{ secrets.FTP_USERNAME }}" --passwd "${{ secrets.FTP_PASSWORD }}" --url "ftp://${{ secrets.FTP_SERVER }}/www/wp-content/themes/aline-wp-theme/"
-          git ftp push --auto-init
+          git ftp push --auto-init --insecure
