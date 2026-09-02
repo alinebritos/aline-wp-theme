@@ -27,10 +27,10 @@ jobs:
           # Higieniza o endereço do host
           CLEAN_HOST=$(echo "$FTP_HOST" | sed -e 's|^ftp://||' -e 's|/||g')
 
-          # Salva as configuracoes diretamente nas variaveis do Git
+          # Salva as configuracoes de acesso
           git config git-ftp.user "$FTP_USER"
           git config git-ftp.password "$FTP_PASS"
           git config git-ftp.url "ftp://${CLEAN_HOST}/wp-content/themes/aline-wp-theme/"
 
-          # Executa o envio inicial ou atualiza os arquivos
-          git ftp init --passive --insecure || git ftp push --passive --insecure
+          # Executa o envio
+          git ftp init --insecure || git ftp push --insecure
