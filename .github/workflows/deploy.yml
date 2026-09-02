@@ -1,36 +1,23 @@
-name: Deploy do Tema KingHost
+name: Deploy via FTP
 
 on:
   push:
     branches:
       - main
-      - master
   workflow_dispatch:
 
 jobs:
-  deploy:
+  web-deploy:
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Baixar codigo do repositorio
+      - name: Baixar codigo
         uses: actions/checkout@v4
+
+      - name: Sincronizar via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          fetch-depth: 0
-
-      - name: Sincronizar arquivos via Git-FTP
-        env:
-          FTP_USER: ${{ secrets.FTP_USERNAME }}
-          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
-          FTP_HOST: ${{ secrets.FTP_SERVER }}
-        run: |
-          sudo apt-get update && sudo apt-get install -y git-ftp
-
-          # Higieniza o host
-          CLEAN_HOST=$(echo "$FTP_HOST" | sed -e 's|^ftp://||' -e 's|/||g')
-
-          # Configura credenciais e caminho relativo ao login do FTP
-          git config git-ftp.user "$FTP_USER"
-          git config git-ftp.password "$FTP_PASS"
-          git config git-ftp.url "ftp://${CLEAN_HOST}/www/wp-content/themes/aline-wp-theme/"
-
-          # Tenta sincronizar; se for a primeira vez no servidor, executa o init
-          git ftp push --insecure || git ftp init --insecure
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /www/wp-content/themes/aline-wp-theme/
