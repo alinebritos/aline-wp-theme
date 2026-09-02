@@ -23,9 +23,12 @@ jobs:
           FTP_HOST: ${{ secrets.FTP_SERVER }}
         run: |
           sudo apt-get update && sudo apt-get install -y git-ftp
-          
-          # Remove prefixos ftp:// ou barras do host caso tenham sido salvos nos Secrets
+
+          # Higieniza o host para evitar duplicacao de protocolo ou barras
           CLEAN_HOST=$(echo "$FTP_HOST" | sed -e 's|^ftp://||' -e 's|/||g')
-          
-          git ftp init -v --passive --user "$FTP_USER" --passwd "$FTP_PASS" --url "ftp://${CLEAN_HOST}:21/wp-content/themes/aline-wp-theme/" --insecure || \
-          git ftp push -v --passive --user "$FTP_USER" --passwd "$FTP_PASS" --url "ftp://${CLEAN_HOST}:21/wp-content/themes/aline-wp-theme/" --insecure
+
+          # Configura as credenciais e a URL de destino
+          git ftp config --user "$FTP_USER" --passwd "$FTP_PASS" --url "ftp://${CLEAN_HOST}/wp-content/themes/aline-wp-theme/"
+
+          # Executa a inicializacao ou a sincronizacao
+          git ftp init -v --passive --insecure || git ftp push -v --passive --insecure
