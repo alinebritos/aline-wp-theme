@@ -33,9 +33,9 @@ jobs:
           echo "Pastas encontradas no FTP:"
           echo "$ROOT_DIRS"
 
-          # Define o caminho dinamico com base no nivel de acesso do usuario
+          # Define o caminho dinamico garantindo a pasta do tema e sem barras nas extremidades
           if echo "$ROOT_DIRS" | grep -qx "www"; then
-            REMOTE_PATH="/www/wp-content/themes/"
+            REMOTE_PATH="www/wp-content/themes/aline-wp-theme"
           elif echo "$ROOT_DIRS" | grep -qx "wp-content"; then
             REMOTE_PATH="wp-content/themes/aline-wp-theme"
           elif echo "$ROOT_DIRS" | grep -qx "themes"; then
