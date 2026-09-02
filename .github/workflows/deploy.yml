@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -11,13 +12,21 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Baixar codigo
+      - name: Baixar codigo do repositorio
         uses: actions/checkout@v4
 
-      - name: Sincronizar via FTP
+      - name: Resolver IPv4 do servidor
+        run: |
+          # Extrai o IP IPv4 (A record) do servidor
+          CLEAN_HOST=$(echo "${{ secrets.FTP_SERVER }}" | sed -e 's|^ftp://||' -e 's|/||g')
+          IPV4_ADDRESS=$(getent ahostsv4 "$CLEAN_HOST" | head -n 1 | awk '{ print $1 }')
+          echo "FTP_IPV4=$IPV4_ADDRESS" >> $GITHUB_ENV
+
+      - name: Sincronizar arquivos via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
+          server: ${{ env.FTP_IPV4 }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /www/wp-content/themes/aline-wp-theme/
+          server-dir: www/wp-content/themes/aline-wp-theme/
+          protocol: ftp
