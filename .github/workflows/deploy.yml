@@ -24,21 +24,29 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y git-ftp
 
-          # Limpa o endereco do host
+          # Higieniza o host
           CLEAN_HOST=$(echo "$FTP_HOST" | sed -e 's|^ftp://||' -e 's|/||g')
 
-          # Detecta automaticamente se a pasta 'www' existe na raiz do FTP
-          LIST_ROOT=$(curl -s --insecure --user "$FTP_USER:$FTP_PASS" "ftp://${CLEAN_HOST}/" || true)
+          # Mapeia as pastas visiveis na raiz do usuario FTP
+          ROOT_DIRS=$(curl -s --insecure -l -u "$FTP_USER:$FTP_PASS" "ftp://${CLEAN_HOST}/" || true)
 
-          if echo "$LIST_ROOT" | grep -q "www"; then
+          echo "Pastas encontradas no FTP:"
+          echo "$ROOT_DIRS"
+
+          # Define o caminho dinamico com base no nivel de acesso do usuario
+          if echo "$ROOT_DIRS" | grep -qx "www"; then
             REMOTE_PATH="www/wp-content/themes/aline-wp-theme"
-          else
+          elif echo "$ROOT_DIRS" | grep -qx "wp-content"; then
             REMOTE_PATH="wp-content/themes/aline-wp-theme"
+          elif echo "$ROOT_DIRS" | grep -qx "themes"; then
+            REMOTE_PATH="themes/aline-wp-theme"
+          else
+            REMOTE_PATH="aline-wp-theme"
           fi
 
-          echo "Caminho FTP detectado: $REMOTE_PATH"
+          echo "Caminho resolvido: $REMOTE_PATH"
 
-          # Garante a criacao da pasta remota
+          # Garante a existencia do diretorio de destino
           curl --ftp-create-dirs --insecure -u "$FTP_USER:$FTP_PASS" "ftp://${CLEAN_HOST}/${REMOTE_PATH}/style.css" -T style.css || true
 
           # Configura e executa o git-ftp
