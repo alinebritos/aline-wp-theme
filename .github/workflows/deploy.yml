@@ -27,31 +27,10 @@ jobs:
           # Higieniza o host
           CLEAN_HOST=$(echo "$FTP_HOST" | sed -e 's|^ftp://||' -e 's|/||g')
 
-          # Mapeia as pastas visiveis na raiz do usuario FTP
-          ROOT_DIRS=$(curl -s --insecure -l -u "$FTP_USER:$FTP_PASS" "ftp://${CLEAN_HOST}/" || true)
-
-          echo "Pastas encontradas no FTP:"
-          echo "$ROOT_DIRS"
-
-          # Define o caminho dinamico garantindo a pasta do tema e sem barras nas extremidades
-          if echo "$ROOT_DIRS" | grep -qx "www"; then
-            REMOTE_PATH="www/wp-content/themes/aline-wp-theme"
-          elif echo "$ROOT_DIRS" | grep -qx "wp-content"; then
-            REMOTE_PATH="wp-content/themes/aline-wp-theme"
-          elif echo "$ROOT_DIRS" | grep -qx "themes"; then
-            REMOTE_PATH="themes/aline-wp-theme"
-          else
-            REMOTE_PATH="aline-wp-theme"
-          fi
-
-          echo "Caminho resolvido: $REMOTE_PATH"
-
-          # Garante a existencia do diretorio de destino
-          curl --ftp-create-dirs --insecure -u "$FTP_USER:$FTP_PASS" "ftp://${CLEAN_HOST}/${REMOTE_PATH}/style.css" -T style.css || true
-
-          # Configura e executa o git-ftp
+          # Configura credenciais e caminho relativo ao login do FTP
           git config git-ftp.user "$FTP_USER"
           git config git-ftp.password "$FTP_PASS"
-          git config git-ftp.url "ftp://${CLEAN_HOST}/${REMOTE_PATH}/"
+          git config git-ftp.url "ftp://${CLEAN_HOST}/www/wp-content/themes/aline-wp-theme/"
 
-          git ftp init --insecure || git ftp push --insecure
+          # Tenta sincronizar; se for a primeira vez no servidor, executa o init
+          git ftp push --insecure || git ftp init --insecure
