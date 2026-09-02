@@ -1,0 +1,29 @@
+# Dependências e pacotes de desenvolvimento
+node_modules/
+vendor/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos do sistema operacional e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+*.swp
+
+# Logs e caches temporários
+*.log
+.sass-cache/
+.cache/
+
+# Arquivos de ambiente e segredos locais
+.env
+.env.*
+!.env.example
+
+# Backups e arquivos compactados
+*.zip
+*.tar.gz
+*.sql
