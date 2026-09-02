@@ -23,5 +23,9 @@ jobs:
           FTP_HOST: ${{ secrets.FTP_SERVER }}
         run: |
           sudo apt-get update && sudo apt-get install -y git-ftp
-          git ftp init -v --user "$FTP_USER" --passwd "$FTP_PASS" --url "ftp://$FTP_HOST/wp-content/themes/aline-wp-theme/" --insecure || \
-          git ftp push -v --user "$FTP_USER" --passwd "$FTP_PASS" --url "ftp://$FTP_HOST/wp-content/themes/aline-wp-theme/" --insecure
+          
+          # Remove prefixos ftp:// ou barras do host caso tenham sido salvos nos Secrets
+          CLEAN_HOST=$(echo "$FTP_HOST" | sed -e 's|^ftp://||' -e 's|/||g')
+          
+          git ftp init -v --passive --user "$FTP_USER" --passwd "$FTP_PASS" --url "ftp://${CLEAN_HOST}:21/wp-content/themes/aline-wp-theme/" --insecure || \
+          git ftp push -v --passive --user "$FTP_USER" --passwd "$FTP_PASS" --url "ftp://${CLEAN_HOST}:21/wp-content/themes/aline-wp-theme/" --insecure
